@@ -1,0 +1,16 @@
+{
+  "name": "tutmon-brasil",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tutmon Brasil - jogo 2D com visualizador 3D do Ignis",
+  "scripts": {
+    "android:sync": "npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/core": "^7.4.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.3"
+  }
+}
