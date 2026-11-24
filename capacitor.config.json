@@ -1,0 +1,9 @@
+{
+  "appId": "com.tutmonbrasil.game",
+  "appName": "Tutmon Brasil",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  }
+}
