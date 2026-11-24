@@ -171,7 +171,8 @@ function playerAttack(i){
  setBattleMessage("IGNIS usou "+m.name+"! Causou "+dmg+" de dano.");
  paintBattleStatus();
  if(battleState.enemyHP<=0){finishBattle(true);return}
- enemyTurn();
+ paintBattleStatus();
+ setTimeout(()=>{if(battleActive&&battleState.enemyHP>0)enemyTurn()},650);
 }
 battleButtons.forEach((b,i)=>b.addEventListener("click",()=>playerAttack(i)));
 document.getElementById("battleContinue").addEventListener("click",()=>{
