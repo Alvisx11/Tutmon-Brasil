@@ -24,7 +24,54 @@ canvas{image-rendering:pixelated;background:#000}
 #ignisClose{border:0;border-radius:9px;background:#344252;color:white;padding:8px 12px;font-size:18px}
 #ignisModel{width:100%;height:100%;min-height:0;flex:1;background:radial-gradient(ellipse at center,#34404b,#111923 70%)}
 #ignisHint{padding:8px 12px;color:#c4cfdb;font-size:12px;text-align:center}
-</style></head><body><div id="app"><div id="view"><canvas id="c" width="480" height="320"></canvas><button id="dbg">▦</button><button id="ignisOpen" type="button">🔥 VER IGNIS 3D</button><section id="ignisPanel" aria-label="Visualizador 3D do Ignis"><header><span>IGNIS · Pokémon inicial</span><button id="ignisClose" type="button" aria-label="Fechar">×</button></header><model-viewer id="ignisModel" src="assets/ignis/Ignis_texturizado_corrigido-reduced.glb" alt="Ignis, criatura inicial" camera-controls auto-rotate rotation-per-second="18deg" shadow-intensity="1" exposure="1" environment-image="neutral" interaction-prompt="none"></model-viewer><div id="ignisHint">Arraste para girar · Use dois dedos para aproximar</div></section></div>
+
+/* Interface adaptável: tela inteira em paisagem, controles sobrepostos */
+html,body,#app{width:100%;height:100%;height:100dvh}
+#app{display:block;position:relative}
+#view{position:absolute;inset:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+#c{display:block;max-width:100vw;max-height:100dvh;object-fit:contain}
+#ctl{position:absolute;inset:0;height:auto;padding:0 3vw 3vh;box-sizing:border-box;align-items:flex-end;pointer-events:none;z-index:4}
+#dpad,#ab,.b{pointer-events:auto}
+#dpad{width:min(22vw,156px);height:min(22vw,156px);min-width:104px;min-height:104px}
+#dpad i{font-size:clamp(17px,2vw,22px)}
+.b{width:clamp(54px,9vw,68px);height:clamp(54px,9vw,68px)}
+#ignisOpen{bottom:auto;top:12px;left:12px}
+#menuOpen{position:absolute;top:12px;right:54px;z-index:6;border:1px solid #82b5d8;border-radius:12px;padding:10px 14px;background:#172b3b;color:#e6f4ff;font:800 13px system-ui;box-shadow:0 3px 12px #0008}
+#partyPanel{display:none;position:absolute;inset:12px;z-index:20;background:#101b29f5;border:2px solid #8bb8d6;border-radius:16px;color:#f2f6fa;overflow:auto;box-shadow:0 12px 40px #000b;flex-direction:column}
+#partyPanel.open{display:flex}
+#partyHead{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#203c55;border-bottom:1px solid #6c91ad}
+#partyHead strong{font-size:clamp(16px,2.5vw,22px)}
+#partyClose{border:0;border-radius:9px;background:#34485c;color:white;padding:8px 14px;font-size:20px}
+#partyContent{display:grid;grid-template-columns:minmax(210px, .9fr) minmax(260px,1.4fr);gap:12px;padding:12px;flex:1}
+#partyList{display:flex;flex-direction:column;gap:8px}
+.partySlot{display:flex;align-items:center;gap:12px;text-align:left;padding:12px;border:1px solid #5f829c;border-radius:12px;background:#203449;color:#fff;min-height:76px}
+.partySlot.active{outline:2px solid #f2c36b;background:#314d63}
+.partyIcon{font-size:28px}
+.partySmall{font-size:12px;color:#b9cbd8}
+#monInfo{border:1px solid #56748a;border-radius:12px;padding:14px;min-width:0}
+#monTitle{display:flex;justify-content:space-between;gap:8px;align-items:center}
+#monTitle h2{margin:0;font-size:clamp(18px,3vw,26px)}
+#monHp{height:10px;background:#4b2c32;border-radius:20px;overflow:hidden;margin:8px 0}
+#monHp span{display:block;width:100%;height:100%;background:#59c878}
+.monTabs{display:flex;gap:8px;margin:12px 0}
+.monTabs button{border:1px solid #6b8da5;border-radius:9px;background:#233c52;color:white;padding:8px 12px}
+.monTabs button.active{background:#d3a75c;color:#17202a;font-weight:800}
+#monStats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.stat{background:#1d3042;padding:9px;border-radius:9px;display:flex;justify-content:space-between;gap:8px}
+#monMoves{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.move{padding:12px;background:#1d3042;border-radius:9px}
+#partyFoot{padding:8px 14px;color:#b9cbd8;font-size:11px;text-align:center}
+@media(orientation:landscape){
+ #partyPanel{inset:3vh 4vw}
+ #partyContent{grid-template-columns:minmax(230px,.8fr) minmax(320px,1.4fr)}
+}
+@media(orientation:portrait){
+ #ctl{padding:0 5vw 3vh}
+ #dpad{width:27vw;height:27vw}
+ #partyContent{grid-template-columns:1fr}
+ #partyList{display:grid;grid-template-columns:1fr}
+}
+</style></head><body><div id="app"><div id="view"><canvas id="c" width="480" height="320"></canvas><button id="dbg">▦</button><button id="ignisOpen" type="button">🔥 VER IGNIS 3D</button><button id="menuOpen" type="button">☰ POKÉMON</button><section id="partyPanel" aria-label="Menu Pokémon"><header id="partyHead"><strong>POKÉMON · EQUIPE</strong><button id="partyClose" type="button" aria-label="Fechar">×</button></header><div id="partyContent"><div id="partyList"><button class="partySlot active" type="button"><span class="partyIcon">🔥</span><span><b>IGNIS</b><br><span class="partySmall">Nv. 5 · Fogo · Em equipe</span><br><span class="partySmall">HP 24 / 24</span></span></button></div><div id="monInfo"><div id="monTitle"><h2>🔥 IGNIS</h2><b>NV. 5</b></div><div class="partySmall">Pokémon inicial · Tipo Fogo</div><div id="monHp"><span></span></div><b style="font-size:13px">HP 24 / 24</b><div class="monTabs"><button id="tabStats" class="active" type="button">Status</button><button id="tabMoves" type="button">Golpes</button></div><div id="monStats"><div class="stat"><span>HP</span><b>24 / 24</b></div><div class="stat"><span>Ataque</span><b>13</b></div><div class="stat"><span>Defesa</span><b>11</b></div><div class="stat"><span>Ataque Esp.</span><b>15</b></div><div class="stat"><span>Defesa Esp.</span><b>12</b></div><div class="stat"><span>Velocidade</span><b>14</b></div></div><div id="monMoves"><div class="move"><b>Brasa</b><br><span class="partySmall">Fogo · Especial</span></div><div class="move"><b>Investida</b><br><span class="partySmall">Normal · Físico</span></div><div class="move"><b>Rugido</b><br><span class="partySmall">Normal · Status</span></div><div class="move"><b>—</b><br><span class="partySmall">Espaço livre</span></div></div></div></div><div id="partyFoot">Dados de status e golpes provisórios para teste da interface · A equipe atual contém apenas Ignis</div></section><section id="ignisPanel" aria-label="Visualizador 3D do Ignis"><header><span>IGNIS · Pokémon inicial</span><button id="ignisClose" type="button" aria-label="Fechar">×</button></header><model-viewer id="ignisModel" src="assets/ignis/Ignis_texturizado_corrigido-reduced.glb" alt="Ignis, criatura inicial" camera-controls auto-rotate rotation-per-second="18deg" shadow-intensity="1" exposure="1" environment-image="neutral" interaction-prompt="none"></model-viewer><div id="ignisHint">Arraste para girar · Use dois dedos para aproximar</div></section></div>
 <div id="ctl"><div id="dpad"><i style="left:67px;top:8px">▲</i><i style="left:67px;bottom:8px">▼</i><i style="left:10px;top:64px">◀</i><i style="right:10px;top:64px">▶</i></div>
 <div id="ab"><button class="b" id="bB">B</button><button class="b" id="bA">A</button></div></div></div>
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
@@ -82,7 +129,7 @@ dp.addEventListener('pointermove',e=>{if(e.buttons||e.pointerType=='touch')dpSet
 ['pointerup','pointercancel','lostpointercapture'].forEach(t=>dp.addEventListener(t,()=>touchDir=null));
 document.getElementById('dbg').onclick=()=>G.debug=!G.debug;
 const wanted=()=>touchDir||held[held.length-1]||null;
-function fit(){const v=document.getElementById('view'),w=v.clientWidth,h=v.clientHeight;let s=Math.min(w/VW,h/VH);if(s>=1)s=Math.floor(s);cv.style.width=VW*s+'px';cv.style.height=VH*s+'px'}
+function fit(){const v=document.getElementById('view'),w=v.clientWidth||innerWidth,h=v.clientHeight||innerHeight;const s=Math.min(w/VW,h/VH);cv.style.width=Math.floor(VW*s)+'px';cv.style.height=Math.floor(VH*s)+'px'}
 addEventListener('resize',fit);fit();
 // Carregamento
 const sheet=makeSheet(),map=new Image();let ready=false;
@@ -112,6 +159,14 @@ ctx.drawImage(sheet,fr*32,ROW[G.dir]*48,32,48,sx,sy,32,48);
 if(G.debug){for(let ty=0;ty<MH;ty++)for(let tx=0;tx<MW;tx++)if(blocked[ty*MW+tx]){ctx.fillStyle='#f004';ctx.fillRect(tx*TS-cx,ty*TS-cy,TS,TS)}
  ctx.fillStyle='#0f04';ZONES.forEach(z=>ctx.fillRect(z.r[0]-cx,z.r[1]-cy,z.r[2],z.r[3]));ctx.fillStyle='#00f5';ctx.fillRect(EXIT.r[0]-cx,EXIT.r[1]-cy,EXIT.r[2],EXIT.r[3])}}
 let last=0;function loop(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;update(dt);draw();requestAnimationFrame(loop)}
+
+
+const partyPanel=document.getElementById('partyPanel');
+document.getElementById('menuOpen').addEventListener('click',()=>partyPanel.classList.add('open'));
+document.getElementById('partyClose').addEventListener('click',()=>partyPanel.classList.remove('open'));
+document.getElementById('tabStats').addEventListener('click',()=>{document.getElementById('tabStats').classList.add('active');document.getElementById('tabMoves').classList.remove('active');document.getElementById('monStats').style.display='grid';document.getElementById('monMoves').style.display='none'});
+document.getElementById('tabMoves').addEventListener('click',()=>{document.getElementById('tabMoves').classList.add('active');document.getElementById('tabStats').classList.remove('active');document.getElementById('monMoves').style.display='grid';document.getElementById('monStats').style.display='none'});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){partyPanel.classList.remove('open');document.getElementById('ignisPanel').classList.remove('open')}});
 
 const ignisPanel=document.getElementById('ignisPanel');
 document.getElementById('ignisOpen').addEventListener('click',()=>ignisPanel.classList.add('open'));
