@@ -71,10 +71,116 @@ html,body,#app{width:100%;height:100%;height:100dvh}
  #partyContent{grid-template-columns:1fr}
  #partyList{display:grid;grid-template-columns:1fr}
 }
-</style></head><body><div id="app"><div id="view"><canvas id="c" width="480" height="320"></canvas><button id="dbg">▦</button><button id="ignisOpen" type="button">🔥 VER IGNIS 3D</button><button id="menuOpen" type="button">☰ POKÉMON</button><section id="partyPanel" aria-label="Menu Pokémon"><header id="partyHead"><strong>POKÉMON · EQUIPE</strong><button id="partyClose" type="button" aria-label="Fechar">×</button></header><div id="partyContent"><div id="partyList"><button class="partySlot active" type="button"><span class="partyIcon">🔥</span><span><b>IGNIS</b><br><span class="partySmall">Nv. 5 · Fogo · Em equipe</span><br><span class="partySmall">HP 24 / 24</span></span></button></div><div id="monInfo"><div id="monTitle"><h2>🔥 IGNIS</h2><b>NV. 5</b></div><div class="partySmall">Pokémon inicial · Tipo Fogo</div><div id="monHp"><span></span></div><b style="font-size:13px">HP 24 / 24</b><div class="monTabs"><button id="tabStats" class="active" type="button">Status</button><button id="tabMoves" type="button">Golpes</button></div><div id="monStats"><div class="stat"><span>HP</span><b>24 / 24</b></div><div class="stat"><span>Ataque</span><b>13</b></div><div class="stat"><span>Defesa</span><b>11</b></div><div class="stat"><span>Ataque Esp.</span><b>15</b></div><div class="stat"><span>Defesa Esp.</span><b>12</b></div><div class="stat"><span>Velocidade</span><b>14</b></div></div><div id="monMoves"><div class="move"><b>Brasa</b><br><span class="partySmall">Fogo · Especial</span></div><div class="move"><b>Investida</b><br><span class="partySmall">Normal · Físico</span></div><div class="move"><b>Rugido</b><br><span class="partySmall">Normal · Status</span></div><div class="move"><b>—</b><br><span class="partySmall">Espaço livre</span></div></div></div></div><div id="partyFoot">Dados de status e golpes provisórios para teste da interface · A equipe atual contém apenas Ignis</div></section><section id="ignisPanel" aria-label="Visualizador 3D do Ignis"><header><span>IGNIS · Pokémon inicial</span><button id="ignisClose" type="button" aria-label="Fechar">×</button></header><model-viewer id="ignisModel" src="assets/ignis/Ignis_texturizado_corrigido-reduced.glb" alt="Ignis, criatura inicial" camera-controls auto-rotate rotation-per-second="18deg" shadow-intensity="1" exposure="1" environment-image="neutral" interaction-prompt="none"></model-viewer><div id="ignisHint">Arraste para girar · Use dois dedos para aproximar</div></section></div>
+
+/* ===== BATALHA IGNIS VS IGNIS ===== */
+#battleScreen{display:none;position:absolute;inset:0;z-index:50;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#36566a 0%,#172d3c 52%,#0b1722 100%);color:#f6f8fb;font-family:system-ui,sans-serif}
+#battleScreen.open{display:flex;flex-direction:column}
+#battleTop{position:absolute;top:3.5%;left:3%;width:min(42%,390px);padding:10px 13px;background:linear-gradient(135deg,#f5f0dc,#d8e1dc);color:#26343a;border:2px solid #fff;border-radius:14px;box-shadow:0 5px 18px #0005;z-index:2}
+#battleBottom{position:absolute;right:3%;bottom:31%;width:min(43%,410px);padding:10px 13px;background:linear-gradient(135deg,#f5f0dc,#d8e1dc);color:#26343a;border:2px solid #fff;border-radius:14px;box-shadow:0 5px 18px #0005;z-index:2}
+.battleName{display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:clamp(13px,2.2vw,19px)}
+.battleMeta{font-size:clamp(10px,1.5vw,13px);font-weight:700;color:#53616a}
+.battleHpTrack{height:10px;margin-top:7px;background:#65716d;border:1px solid #4c5c58;border-radius:20px;overflow:hidden}
+.battleHpFill{height:100%;width:100%;background:linear-gradient(90deg,#65c86b,#b4e36b);border-radius:20px;transition:width .18s}
+.battleHpText{text-align:right;font-size:11px;font-weight:800;margin-top:3px}
+#battleModels{position:absolute;inset:0 0 27% 0;pointer-events:none}
+.battleModel{position:absolute;width:39%;height:65%;max-width:390px;bottom:2%;background:transparent;--poster-color:transparent}
+#enemyModel{right:4%;bottom:0}
+#playerModel{left:3%;bottom:0}
+.battlePlatform{position:absolute;width:36%;height:9%;bottom:4%;border-radius:50%;background:radial-gradient(ellipse,#d7c8a1aa 0%,#9db2a044 55%,transparent 72%);filter:blur(2px)}
+#enemyPlatform{right:5%}#playerPlatform{left:2%}
+#battleControls{position:absolute;left:0;right:0;bottom:0;min-height:26%;display:grid;grid-template-columns:minmax(145px,.9fr) minmax(250px,1.2fr);gap:12px;padding:12px 3%;background:linear-gradient(110deg,#f1ead5,#d5e0d8);color:#26343a;border-top:3px solid #fff;box-shadow:0 -8px 24px #0004}
+#battleMessage{display:flex;align-items:center;justify-content:center;padding:12px;border:2px solid #8a9c9a;border-radius:12px;background:#fffdf2;font-weight:750;font-size:clamp(12px,1.8vw,16px);line-height:1.35;min-height:72px}
+#battleActions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.battleMove{border:2px solid #9aabb0;border-radius:12px;background:linear-gradient(145deg,#fff,#e6edf0);color:#24343d;padding:8px 10px;text-align:left;font-weight:900;box-shadow:0 3px 0 #aebdc0;min-height:54px}
+.battleMove:active{transform:translateY(2px);box-shadow:0 1px 0 #aebdc0}
+.battleMove:disabled{opacity:.42}
+.battleMove small{display:block;font-size:10px;color:#647780;font-weight:700;margin-top:3px}
+#battleEnd{display:none;position:absolute;inset:0;z-index:5;align-items:center;justify-content:center;background:#07111dcc;padding:20px}
+#battleEnd.open{display:flex}
+#battleEndCard{width:min(420px,90%);padding:24px;text-align:center;background:#f4f0df;color:#26343a;border:3px solid #fff;border-radius:18px;box-shadow:0 12px 40px #0008}
+#battleEndCard h2{margin:0 0 8px}
+#battleContinue{margin-top:14px;border:0;border-radius:11px;background:#244f63;color:#fff;font-weight:900;padding:12px 26px;font-size:15px}
+@media(orientation:portrait){#battleTop{width:48%;top:2%;left:2%}#battleBottom{width:49%;right:2%;bottom:37%}.battleModel{width:48%;height:53%}#battleModels{bottom:36%}#battleControls{grid-template-columns:1fr;gap:7px;padding:8px 3%;min-height:35%}#battleMessage{min-height:42px;padding:6px}#battleActions{gap:6px}.battleMove{min-height:45px;padding:5px 8px}}
+</style></head><body><div id="app"><div id="view"><canvas id="c" width="480" height="320"></canvas><button id="dbg">▦</button><button id="ignisOpen" type="button">🔥 VER IGNIS 3D</button><button id="menuOpen" type="button">☰ POKÉMON</button><section id="partyPanel" aria-label="Menu Pokémon"><header id="partyHead"><strong>POKÉMON · EQUIPE</strong><button id="partyClose" type="button" aria-label="Fechar">×</button></header><div id="partyContent"><div id="partyList"><button class="partySlot active" type="button"><span class="partyIcon">🔥</span><span><b>IGNIS</b><br><span class="partySmall">Nv. 5 · Fogo · Em equipe</span><br><span class="partySmall">HP 24 / 24</span></span></button></div><div id="monInfo"><div id="monTitle"><h2>🔥 IGNIS</h2><b>NV. 5</b></div><div class="partySmall">Pokémon inicial · Tipo Fogo</div><div id="monHp"><span></span></div><b style="font-size:13px">HP 24 / 24</b><div class="monTabs"><button id="tabStats" class="active" type="button">Status</button><button id="tabMoves" type="button">Golpes</button></div><div id="monStats"><div class="stat"><span>HP</span><b>24 / 24</b></div><div class="stat"><span>Ataque</span><b>13</b></div><div class="stat"><span>Defesa</span><b>11</b></div><div class="stat"><span>Ataque Esp.</span><b>15</b></div><div class="stat"><span>Defesa Esp.</span><b>12</b></div><div class="stat"><span>Velocidade</span><b>14</b></div></div><div id="monMoves"><div class="move"><b>Brasa</b><br><span class="partySmall">Fogo · Especial</span></div><div class="move"><b>Investida</b><br><span class="partySmall">Normal · Físico</span></div><div class="move"><b>Rugido</b><br><span class="partySmall">Normal · Status</span></div><div class="move"><b>—</b><br><span class="partySmall">Espaço livre</span></div></div></div></div><div id="partyFoot">Dados de status e golpes provisórios para teste da interface · A equipe atual contém apenas Ignis</div></section><section id="ignisPanel" aria-label="Visualizador 3D do Ignis"><header><span>IGNIS · Pokémon inicial</span><button id="ignisClose" type="button" aria-label="Fechar">×</button></header><model-viewer id="ignisModel" src="assets/ignis/Ignis_texturizado_corrigido-reduced.glb" alt="Ignis, criatura inicial" camera-controls auto-rotate rotation-per-second="18deg" shadow-intensity="1" exposure="1" environment-image="neutral" interaction-prompt="none"></model-viewer><div id="ignisHint">Arraste para girar · Use dois dedos para aproximar</div></section>
+<section id="battleScreen" aria-label="Batalha Pokémon">
+ <div id="battleModels">
+  <div class="battlePlatform" id="enemyPlatform"></div><div class="battlePlatform" id="playerPlatform"></div>
+  <model-viewer id="enemyModel" class="battleModel" src="assets/ignis/Ignis_texturizado_corrigido-reduced.glb" alt="Ignis selvagem" camera-orbit="180deg 75deg 2.8m" field-of-view="30deg" interaction-prompt="none" shadow-intensity="1" exposure="1" environment-image="neutral"></model-viewer>
+  <model-viewer id="playerModel" class="battleModel" src="assets/ignis/Ignis_texturizado_corrigido-reduced.glb" alt="Seu Ignis" camera-orbit="0deg 75deg 2.8m" field-of-view="30deg" interaction-prompt="none" shadow-intensity="1" exposure="1" environment-image="neutral"></model-viewer>
+ </div>
+ <div id="battleTop"><div class="battleName"><span>IGNIS <span class="battleMeta">♂</span></span><span class="battleMeta">Nv. 5</span></div><div class="battleHpTrack"><div id="enemyHpBar" class="battleHpFill"></div></div><div id="enemyHpText" class="battleHpText">40 / 40 HP</div></div>
+ <div id="battleBottom"><div class="battleName"><span>IGNIS</span><span class="battleMeta">Nv. 5</span></div><div class="battleHpTrack"><div id="playerHpBar" class="battleHpFill"></div></div><div id="playerHpText" class="battleHpText">40 / 40 HP</div></div>
+ <div id="battleControls"><div id="battleMessage" role="status">Um IGNIS selvagem apareceu!</div><div id="battleActions">
+  <button class="battleMove" data-move="0">CHAMA <small>FOGO · PP <span>15/15</span></small></button>
+  <button class="battleMove" data-move="1">INVESTIDA <small>NORMAL · PP <span>20/20</span></small></button>
+  <button class="battleMove" data-move="2">MORDIDA <small>NORMAL · PP <span>15/15</span></small></button>
+  <button class="battleMove" data-move="3">BRASA <small>FOGO · PP <span>25/25</span></small></button>
+ </div></div>
+ <div id="battleEnd"><div id="battleEndCard"><h2 id="battleEndTitle">Você venceu!</h2><p id="battleEndText">O combate terminou.</p><button id="battleContinue" type="button">CONTINUAR</button></div></div>
+</section></div>
 <div id="ctl"><div id="dpad"><i style="left:67px;top:8px">▲</i><i style="left:67px;bottom:8px">▼</i><i style="left:10px;top:64px">◀</i><i style="right:10px;top:64px">▶</i></div>
 <div id="ab"><button class="b" id="bB">B</button><button class="b" id="bA">A</button></div></div></div>
-<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js">
+/* ===== MECÂNICA INICIAL DE ENCONTROS E BATALHA ===== */
+let battleActive=false;
+const battleState={playerHP:40,enemyHP:40,maxHP:40,pp:[15,20,15,25],maxPP:[15,20,15,25],turnBusy:false};
+const battleMoves=[{name:"Chama",min:8,max:12},{name:"Investida",min:5,max:9},{name:"Mordida",min:7,max:11},{name:"Brasa",min:6,max:13}];
+const battleScreen=document.getElementById("battleScreen");
+const battleMessage=document.getElementById("battleMessage");
+const battleButtons=[...document.querySelectorAll(".battleMove")];
+function setBattleMessage(t){battleMessage.textContent=t}
+function paintBattleStatus(){
+ const e=Math.max(0,battleState.enemyHP),p=Math.max(0,battleState.playerHP);
+ document.getElementById("enemyHpBar").style.width=(e/battleState.maxHP*100)+"%";
+ document.getElementById("playerHpBar").style.width=(p/battleState.maxHP*100)+"%";
+ document.getElementById("enemyHpText").textContent=e+" / "+battleState.maxHP+" HP";
+ document.getElementById("playerHpText").textContent=p+" / "+battleState.maxHP+" HP";
+ battleButtons.forEach((b,i)=>{b.querySelector("small span").textContent=battleState.pp[i]+"/"+battleState.maxPP[i];b.disabled=battleState.pp[i]<=0||battleState.turnBusy||!battleActive});
+}
+function startBattle(){
+ if(battleActive)return;
+ battleActive=true;battleState.playerHP=40;battleState.enemyHP=40;battleState.pp=[...battleState.maxPP];battleState.turnBusy=false;
+ held.length=0;touchDir=null;
+ document.getElementById("battleEnd").classList.remove("open");
+ battleScreen.classList.add("open");
+ setBattleMessage("Um IGNIS selvagem apareceu! O que IGNIS fará?");
+ paintBattleStatus();
+}
+function finishBattle(won){
+ battleState.turnBusy=true;paintBattleStatus();
+ document.getElementById("battleEndTitle").textContent=won?"Você venceu!":"IGNIS foi derrotado!";
+ document.getElementById("battleEndText").textContent=won?"O Ignis selvagem foi derrotado.":"Seu Ignis não consegue continuar.";
+ document.getElementById("battleEnd").classList.add("open");
+}
+function enemyTurn(){
+ if(!battleActive||battleState.enemyHP<=0||battleState.playerHP<=0)return;
+ const choices=[0,1,2,3].filter(i=>battleState.pp[i]>0);
+ const idx=choices.length?choices[Math.floor(Math.random()*choices.length)]:1;
+ const dmg=Math.floor(Math.random()*(battleMoves[idx].max-battleMoves[idx].min+1))+battleMoves[idx].min;
+ battleState.playerHP=Math.max(0,battleState.playerHP-dmg);
+ setBattleMessage("O IGNIS selvagem usou "+battleMoves[idx].name+"! Causou "+dmg+" de dano.");
+ paintBattleStatus();
+ if(battleState.playerHP<=0)finishBattle(false);
+ else{battleState.turnBusy=false;paintBattleStatus()}
+}
+function playerAttack(i){
+ if(!battleActive||battleState.turnBusy||battleState.pp[i]<=0)return;
+ battleState.turnBusy=true;battleState.pp[i]--;
+ const m=battleMoves[i],dmg=Math.floor(Math.random()*(m.max-m.min+1))+m.min;
+ battleState.enemyHP=Math.max(0,battleState.enemyHP-dmg);
+ setBattleMessage("IGNIS usou "+m.name+"! Causou "+dmg+" de dano.");
+ paintBattleStatus();
+ if(battleState.enemyHP<=0){finishBattle(true);return}
+ enemyTurn();
+}
+battleButtons.forEach((b,i)=>b.addEventListener("click",()=>playerAttack(i)));
+document.getElementById("battleContinue").addEventListener("click",()=>{
+ document.getElementById("battleEnd").classList.remove("open");
+ battleScreen.classList.remove("open");battleActive=false;battleState.turnBusy=false;
+ G.inGrass=false;G.steps=0;held.length=0;touchDir=null;
+ paintBattleStatus();
+});
+</script>
 <script>
 "use strict";
 // ===== DADOS DO MAPA (coordenadas em px de 1536x1024; fonte: vila_pantano_01.tmj + correções) =====
@@ -139,7 +245,7 @@ function snapCam(){G.cam.x=camT().x;G.cam.y=camT().y}
 function camT(){return{x:Math.max(0,Math.min(MW*TS-VW,G.px+16-VW/2)),y:Math.max(0,Math.min(MH*TS-VH,G.py+16-VH/2))}}
 // Lógica
 const SPEED=128,TURN=0.09;
-function update(dt){const w=wanted();
+function update(dt){if(battleActive)return;const w=wanted();
 if(!G.mv){ if(w){ if(G.dir!==w){G.dir=w;G.turn=TURN} else if(G.turn>0){G.turn-=dt} else {
  const[dx,dy]=DIRS[w],nx=G.tx+dx,ny=G.ty+dy; if(!isBlocked(nx,ny)){G.mv={nx,ny};G.prog=0}}
  } else G.turn=0}
@@ -147,6 +253,7 @@ if(G.mv){G.prog+=SPEED*dt;const fx=G.tx*TS,fy=G.ty*TS,k=Math.min(1,G.prog/TS);
  G.px=fx+(G.mv.nx-G.tx)*TS*k;G.py=fy+(G.mv.ny-G.ty)*TS*k;G.anim+=dt*8;
  if(k>=1){G.tx=G.mv.nx;G.ty=G.mv.ny;G.mv=null;G.steps++;G.px=G.tx*TS;G.py=G.ty*TS;save();
   G.inGrass=ZONES.some(z=>inR(G.tx*TS+16,G.ty*TS+16,z.r)); // gancho p/ Etapa 4 (encontros)
+  if(G.inGrass&&Math.random()<0.18)startBattle();
   if(wanted()&&wanted()===G.dir){const[dx,dy]=DIRS[G.dir];if(!isBlocked(G.tx+dx,G.ty+dy)){G.mv={nx:G.tx+dx,ny:G.ty+dy};G.prog=G.prog-TS>0?0:0}}}
  } else G.anim=0;
 const t=camT(),a=1-Math.pow(0.0005,dt);G.cam.x+=(t.x-G.cam.x)*a;G.cam.y+=(t.y-G.cam.y)*a}
