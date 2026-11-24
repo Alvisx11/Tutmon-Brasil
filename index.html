@@ -16,9 +16,18 @@ canvas{image-rendering:pixelated;background:#000}
 .b:active{filter:brightness(1.5)}#bA{margin-bottom:34px}
 #dbg{position:absolute;top:6px;right:6px;background:#0008;color:#fff;border:0;border-radius:6px;padding:6px 10px;font-size:14px}
 @media(min-width:900px){#ctl{display:none}}
-</style></head><body><div id="app"><div id="view"><canvas id="c" width="480" height="320"></canvas><button id="dbg">▦</button></div>
+
+#ignisOpen{position:absolute;left:8px;bottom:8px;z-index:5;border:1px solid #d98b45;border-radius:12px;padding:9px 12px;background:#271b18;color:#ffe0b4;font:700 13px system-ui;box-shadow:0 3px 12px #0008}
+#ignisPanel{display:none;position:absolute;inset:8px;z-index:10;background:#111923f5;border:1px solid #d98b45;border-radius:16px;overflow:hidden;flex-direction:column}
+#ignisPanel.open{display:flex}
+#ignisPanel header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;color:#ffe0b4;font-weight:700}
+#ignisClose{border:0;border-radius:9px;background:#344252;color:white;padding:8px 12px;font-size:18px}
+#ignisModel{width:100%;height:100%;min-height:0;flex:1;background:radial-gradient(ellipse at center,#34404b,#111923 70%)}
+#ignisHint{padding:8px 12px;color:#c4cfdb;font-size:12px;text-align:center}
+</style></head><body><div id="app"><div id="view"><canvas id="c" width="480" height="320"></canvas><button id="dbg">▦</button><button id="ignisOpen" type="button">🔥 VER IGNIS 3D</button><section id="ignisPanel" aria-label="Visualizador 3D do Ignis"><header><span>IGNIS · Pokémon inicial</span><button id="ignisClose" type="button" aria-label="Fechar">×</button></header><model-viewer id="ignisModel" src="assets/ignis/Ignis_texturizado_corrigido-reduced.glb" alt="Ignis, criatura inicial" camera-controls auto-rotate rotation-per-second="18deg" shadow-intensity="1" exposure="1" environment-image="neutral" interaction-prompt="none"></model-viewer><div id="ignisHint">Arraste para girar · Use dois dedos para aproximar</div></section></div>
 <div id="ctl"><div id="dpad"><i style="left:67px;top:8px">▲</i><i style="left:67px;bottom:8px">▼</i><i style="left:10px;top:64px">◀</i><i style="right:10px;top:64px">▶</i></div>
 <div id="ab"><button class="b" id="bB">B</button><button class="b" id="bA">A</button></div></div></div>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 <script>
 "use strict";
 // ===== DADOS DO MAPA (coordenadas em px de 1536x1024; fonte: vila_pantano_01.tmj + correções) =====
@@ -103,4 +112,8 @@ ctx.drawImage(sheet,fr*32,ROW[G.dir]*48,32,48,sx,sy,32,48);
 if(G.debug){for(let ty=0;ty<MH;ty++)for(let tx=0;tx<MW;tx++)if(blocked[ty*MW+tx]){ctx.fillStyle='#f004';ctx.fillRect(tx*TS-cx,ty*TS-cy,TS,TS)}
  ctx.fillStyle='#0f04';ZONES.forEach(z=>ctx.fillRect(z.r[0]-cx,z.r[1]-cy,z.r[2],z.r[3]));ctx.fillStyle='#00f5';ctx.fillRect(EXIT.r[0]-cx,EXIT.r[1]-cy,EXIT.r[2],EXIT.r[3])}}
 let last=0;function loop(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;update(dt);draw();requestAnimationFrame(loop)}
+
+const ignisPanel=document.getElementById('ignisPanel');
+document.getElementById('ignisOpen').addEventListener('click',()=>ignisPanel.classList.add('open'));
+document.getElementById('ignisClose').addEventListener('click',()=>ignisPanel.classList.remove('open'));
 </script></body></html>
